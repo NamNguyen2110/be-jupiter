@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jupiter.common.dto.RoleResponse;
-import com.jupiter.gateway.ConvertJsonUtils;
+import com.jupiter.gateway.utils.JsonUtils;
 import com.jupiter.gateway.Initializing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +31,14 @@ import java.util.Map;
 public class GatewayFilter implements GlobalFilter {
 
     @Autowired
-    private ConvertJsonUtils jsonUtils;
+    private JsonUtils jsonUtils;
 
     @Value("${keycloak-client.client-id}")
     private String clientId;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) getPublicKey(Initializing.pubicKey), null);
-        DecodedJWT decodedJWT = JWT.decode(getAccessToken(exchange));
-        algorithm.verify(decodedJWT);
+        DecodedJWT decodedJWT = verifyToken(exchange);
         Map<String, Claim> map = decodedJWT.getClaims();
         Map<String, Object> objectMap = map.get("resource_access").asMap();
         List<String> roles = getRoleFromAccessToken(objectMap, clientId);
@@ -48,8 +46,16 @@ public class GatewayFilter implements GlobalFilter {
             ServerHttpResponse response = exchange.getResponse();
             HttpHeaders responseHeader = response.getHeaders();
             responseHeader.add("x-role", roles.get(0));
+            log.info(String.valueOf(response.getHeaders()));
             if (response.getStatusCode().value() >= 400) responseHeader.remove("Cache-Control");
         }));
+    }
+
+    private DecodedJWT verifyToken(ServerWebExchange exchange) {
+        Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) getPublicKey(Initializing.pubicKey), null);
+        DecodedJWT decodedJWT = JWT.decode(getAccessToken(exchange));
+        algorithm.verify(decodedJWT);
+        return decodedJWT;
     }
 
     private List<String> getRoleFromAccessToken(Map<String, Object> objectMap, String clientId) {

@@ -1,4 +1,4 @@
-package com.jupiter.gateway;
+package com.jupiter.gateway.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ConvertJsonUtils {
+public class JsonUtils {
     private final ObjectMapper objectMapper;
 
     public <T> T convertStringToObject(String input, Class<T> tClass) {
