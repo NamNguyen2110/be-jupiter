@@ -20,7 +20,7 @@ public class FilterAOP {
     @Before("within(@org.springframework.web.bind.annotation.RestController *) ")
     public void hasAuthorities() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String header = request.getHeader("ROLE");
+        String header = request.getHeader("x-role");
 
         if (!header.equals("ADMIN")) {
             throw new BusinessException(HttpStatus.UNAUTHORIZED.value(), "Dont have permission");
