@@ -1,0 +1,46 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: "mysql"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - keycloakmysqldata:/var/lib/mysql
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    environment:
+      KC_DB: mysql
+      KC_DB_URL_HOST: mysql
+      KC_DB_URL_PORT: 3306
+      KC_DB_SCHEMA: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+    ports:
+      - "8080:8080"
+    command:
+      - start-dev
+    depends_on:
+      - mysql
+  eruka-server:
+    container_name: eruka_service
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+    image: jupiter/eureka:latest
+    ports:
+      - 8761:8761
+    hostname: serviceregistry
+volumes:
+  keycloakmysqldata:
+  jupiter-volumes:
+networks:
+  jupiter-networks:
+    driver: bridge
