@@ -6,7 +6,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>eureka</module>
+        <module>common</module>
         <module>gateway</module>
+        <module>project</module>
     </modules>
     <groupId>org.cmcglobal.du11</groupId>
     <artifactId>be-jupiter</artifactId>

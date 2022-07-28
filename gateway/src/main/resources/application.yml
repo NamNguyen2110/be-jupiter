@@ -36,14 +36,13 @@ spring:
             allowedHeaders:
               - "*"
             allowCredentials: false
-
       routes:
-        - id: keycloak-route
+        - id: project-route
           predicates:
-            - Path=/*/keycloak/**
+            - Path=/*/api/project/**
           filters:
             - StripPrefix=1
-          uri: "lb://keycloak"
+          uri: "lb://project"
 hystrix:
   command:
     # Default configurations for ALL endpoints
@@ -59,4 +58,16 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 5000
-  
+keycloak-client:
+  client-id: jupiter-chill
+  client-secret: Jg1PfMw3TLf1sVuS37FHU1DLG5ymDnEk
+---
+keycloak:
+  realm: jupiter
+  auth-server-url: http://localhost:8000/auth
+  ssl-required: external
+  resource: du11-jupiter
+  bearer-only: true
+keycloak-config:
+  username: admin
+  password: admin

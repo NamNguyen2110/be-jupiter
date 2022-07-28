@@ -1,6 +1,5 @@
 package com.jupiter.common.base;
 
-import com.jupiter.common.exception.StandardizedException;
 import com.jupiter.common.utils.StatusCodeUtils;
 import lombok.*;
 
@@ -28,15 +27,4 @@ public class ApiResponse<T> implements Serializable {
                 .build();
     }
 
-    public static ApiResponse<Object> fromStandardizedException(StandardizedException ex) {
-        ApiResponse<Object> response = ApiResponse.<Object>builder()
-                .code(ex.getCode())
-                .timestamp(ex.getTimestamp())
-                .data(ex.getDetails())
-                .build();
-
-        response.setResponseMessage(ex.getResponseMessage());
-
-        return response;
-    }
 }
